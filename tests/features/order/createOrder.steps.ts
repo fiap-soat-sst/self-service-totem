@@ -25,7 +25,7 @@ Given('que o cliente se identifica via CPF {string}', async (cpf: string) => {
     order.cpf = cpf
 })
 
-When('o cliente seleciona o produto {string} da categoria {string} nessa quantidade {string}', async (productName: string, productType: string, productQuantity: number) => {
+When('o cliente seleciona o produto {string} da categoria {string} nessa quantidade {string}', async (productName: string, productType: string, productQuantity: string) => {
     const productResponse = await request(baseUrl)
         .get(`/product/${productType}`)
         .set({ 'token': token })
