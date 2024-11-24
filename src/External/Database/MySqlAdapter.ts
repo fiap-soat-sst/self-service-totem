@@ -7,6 +7,8 @@ import { Product } from './Models/Product'
 import { Order } from './Models/Order'
 import { OrderItem } from './Models/OrderItem'
 import { Payment } from './Models/Payment'
+import dotenv from 'dotenv'
+dotenv.config()
 
 export const AppDataSource = new DataSource({
     type: 'mysql',

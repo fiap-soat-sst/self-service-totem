@@ -7,6 +7,8 @@ import OrderRoutes from './Routes/OrderRoutes'
 import VerifyAuthToken from '../../UseCases/Auth/verifyAuthToken.usecase'
 import { authMiddleware } from './Auth/AuthMiddleware'
 import { RouteTypeEnum } from '../../Entities/Enums/RouteType'
+import dotenv from 'dotenv'
+dotenv.config()
 
 const getApiRoute = (name: String) => `/api/${name}`
 
