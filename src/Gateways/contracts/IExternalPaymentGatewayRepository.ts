@@ -2,9 +2,22 @@ import { Either } from '../../@Shared/Either'
 import { Payment } from '../../Entities/Payment'
 
 export default interface IExternalPaymentGatewayRepository {
-    generateQrCodePaymentString(
-        payment: Payment
-    ): Promise<Either<Error, String>>
+    checkout(
+        token: string,
+        orderId: String,
+        total: number
+    ): Promise<
+        Either<
+            Error,
+            {
+                id: string
+                status: string
+                total: number
+                orderId: string
+                qr_code_data: string
+            }
+        >
+    >
     getPaymentStatusById(
         externalPaymentId: String
     ): Promise<Either<Error, String>>

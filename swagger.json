@@ -60,7 +60,7 @@
                 }
             }
         },
-        "/product": {
+        "/product/protected": {
             "post": {
                 "summary": "Create a new product",
                 "tags": ["Products"],
@@ -95,7 +95,7 @@
                 }
             }
         },
-        "/product/{id}": {
+        "/product/protected/{id}": {
             "put": {
                 "summary": "Update an existing product",
                 "tags": ["Products"],
@@ -178,76 +178,6 @@
                     },
                     "400": {
                         "description": "Bad request: Unable to delete the product"
-                    },
-                    "500": {
-                        "description": "Internal server error"
-                    }
-                }
-            }
-        },
-        "/customer": {
-            "post": {
-                "summary": "Create a new customer",
-                "tags": ["Customers"],
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/CustomerInputDTO"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "201": {
-                        "description": "Customer created successfully",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "string",
-                                    "example": "created successfully"
-                                }
-                            }
-                        }
-                    },
-                    "400": {
-                        "description": "CPF already registered"
-                    },
-                    "500": {
-                        "description": "Internal server error"
-                    }
-                }
-            }
-        },
-        "/customer/identify": {
-            "post": {
-                "summary": "Identify a customer",
-                "tags": ["Customers"],
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/CustomerIndentiferDTO"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "200": {
-                        "description": "Customer found",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "object",
-                                    "$ref": "#/components/schemas/CustomerOutputDTO"
-                                }
-                            }
-                        }
-                    },
-                    "400": {
-                        "description": "Bad request: Missing or invalid parameters"
                     },
                     "500": {
                         "description": "Internal server error"
@@ -514,67 +444,6 @@
                 }
             }
         },
-        "/payment/": {
-            "get": {
-                "summary": "Get all payments",
-                "tags": ["Payments"],
-                "responses": {
-                    "200": {
-                        "description": "Payments found",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "object",
-                                    "$ref": "#/components/schemas/PaymentStatusDTO"
-                                }
-                            }
-                        }
-                    },
-                    "404": {
-                        "description": "Payments not found"
-                    },
-                    "500": {
-                        "description": "Internal server error"
-                    }
-                }
-            }
-        },
-        "/payment/{id}": {
-            "get": {
-                "summary": "Get a payment by ID",
-                "tags": ["Payments"],
-                "parameters": [
-                    {
-                        "name": "id",
-                        "in": "path",
-                        "description": "ID of the payment to find",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Payment found",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "object",
-                                    "$ref": "#/components/schemas/PaymentStatusDTO"
-                                }
-                            }
-                        }
-                    },
-                    "404": {
-                        "description": "Payment not found"
-                    },
-                    "500": {
-                        "description": "Internal server error"
-                    }
-                }
-            }
-        },
         "/payment/checkout": {
             "post": {
                 "summary": "Initialize payment process",
@@ -616,15 +485,15 @@
                 }
             }
         },
-        "/payment/update-status/{id}": {
+        "/payment/protected/update-status/{orderId}": {
             "post": {
                 "summary": "Update the payment status",
                 "tags": ["Payments"],
                 "parameters": [
                     {
-                        "name": "id",
+                        "name": "orderId",
                         "in": "path",
-                        "description": "ID of the payment to find",
+                        "description": "ID of the order to find",
                         "required": true,
                         "schema": {
                             "type": "string"
@@ -670,6 +539,13 @@
         }
     },
     "components": {
+        "securitySchemes": {
+            "tokenAuth": {
+                "type": "apiKey",
+                "in": "header",
+                "name": "Token"
+            }
+        },
         "schemas": {
             "ProductInputDTO": {
                 "type": "object",
@@ -721,55 +597,9 @@
                 },
                 "required": ["id", "name", "category", "price", "description"]
             },
-            "CustomerInputDTO": {
-                "type": "object",
-                "properties": {
-                    "name": {
-                        "type": "string"
-                    },
-                    "email": {
-                        "type": "string"
-                    },
-                    "cpf": {
-                        "type": "string"
-                    }
-                }
-            },
-            "CustomerIndentiferDTO": {
-                "type": "object",
-                "in": "body",
-                "properties": {
-                    "cpf": {
-                        "type": "string"
-                    }
-                }
-            },
-            "CustomerOutputDTO": {
-                "type": "object",
-                "properties": {
-                    "id": {
-                        "type": "string"
-                    },
-                    "name": {
-                        "type": "string"
-                    },
-                    "email": {
-                        "type": "string"
-                    },
-                    "cpf": {
-                        "type": "string"
-                    }
-                }
-            },
             "OrderInputDTO": {
                 "type": "object",
                 "properties": {
-                    "name": {
-                        "type": "string"
-                    },
-                    "cpf": {
-                        "type": "string"
-                    },
                     "products": {
                         "type": "array",
                         "items": {
@@ -859,14 +689,6 @@
                     }
                 }
             },
-            "PaymentStatusDTO": {
-                "type": "object",
-                "properties": {
-                    "paymentId": {
-                        "type": "string"
-                    }
-                }
-            },
             "PaymentUpdateStatusInputDTO": {
                 "type": "object",
                 "properties": {
@@ -876,5 +698,10 @@
                 }
             }
         }
-    }
+    },
+    "security": [
+        {
+            "tokenAuth": []
+        }
+    ]
 }

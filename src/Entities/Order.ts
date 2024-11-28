@@ -9,13 +9,13 @@ import Product from './Product'
 export default class Order {
     private id: string | null
     private items: OrderItem[]
-    private customer: Customer | string
+    private customer: Customer
     private status: StatusEnum
     private closed: boolean
     private createdAt: Date
 
     constructor(
-        customer: Customer | string,
+        customer: Customer,
         id: string | null = null,
         status: StatusEnum = StatusEnum.Received,
         createdAt: Date = new Date()
@@ -85,7 +85,7 @@ export default class Order {
         return this.items
     }
 
-    getCustomer(): Customer | string {
+    getCustomer(): Customer {
         return this.customer
     }
 
@@ -113,7 +113,7 @@ export default class Order {
         this.validator()
     }
 
-    updateCustomer(customer: Customer | string): void {
+    updateCustomer(customer: Customer): void {
         this.customer = customer
         this.validator()
     }

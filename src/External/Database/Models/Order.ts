@@ -7,8 +7,7 @@ import {
     OneToOne,
 } from 'typeorm'
 import { OrderItem } from './OrderItem'
-import { Customer } from './Customer'
-import { Payment } from './Payment'
+import { Transaction } from './Transaction'
 import { StatusEnum } from '../../../Entities/Enums/StatusEnum'
 
 @Entity()
@@ -31,6 +30,13 @@ export class Order {
     nameCustomer: string
 
     @Column({
+        length: 60,
+        nullable: false,
+        unique: false,
+    })
+    cpfCustomer: string
+
+    @Column({
         type: 'boolean',
         nullable: false,
         default: false,
@@ -44,17 +50,15 @@ export class Order {
     })
     status: StatusEnum
 
-    @ManyToOne(() => Customer, (customer) => customer.orders, {
-        nullable: true,
-    })
-    customer: Customer
-
     @OneToMany(() => OrderItem, (orderItem) => orderItem.order, {
         nullable: true,
         cascade: true,
     })
     orderItems: OrderItem[]
 
-    @OneToOne(() => Payment, (payment) => payment.order)
-    payment: Payment
+    @OneToMany(() => Transaction, (transaction) => transaction.order, {
+        nullable: true,
+        cascade: true,
+    })
+    transactions: Transaction[]
 }
