@@ -98,6 +98,19 @@ describe('OrderController', () => {
         expect(mockResponse.json).toHaveBeenCalledWith({ orders: mockOrders })
     })
 
+    it('listOrders - should return error with 400 status', async () => {
+        const mockError = new Error('Failed to list orders')
+        listOrdersUseCase.execute = vi.fn().mockResolvedValue(Left(mockError))
+
+        await controller.listOrders(
+            mockRequest as Request,
+            mockResponse as Response
+        )
+
+        expect(mockResponse.status).toHaveBeenCalledWith(400)
+        expect(mockResponse.json).toHaveBeenCalledWith(mockError.message)
+    })
+
     it('listAllOrders - should return all orders with 200 status', async () => {
         const mockOrders = [{ id: '1' }, { id: '2' }]
         listAllOrdersUseCase.execute = vi
@@ -111,6 +124,21 @@ describe('OrderController', () => {
 
         expect(mockResponse.status).toHaveBeenCalledWith(200)
         expect(mockResponse.json).toHaveBeenCalledWith({ orders: mockOrders })
+    })
+
+    it('listAllOrders - should return error with 400 status', async () => {
+        const mockError = new Error('Failed to list orders')
+        listAllOrdersUseCase.execute = vi
+            .fn()
+            .mockResolvedValue(Left(mockError))
+
+        await controller.listAllOrders(
+            mockRequest as Request,
+            mockResponse as Response
+        )
+
+        expect(mockResponse.status).toHaveBeenCalledWith(400)
+        expect(mockResponse.json).toHaveBeenCalledWith(mockError.message)
     })
 
     it('getOrder - should return an order by id with 200 status', async () => {
@@ -129,6 +157,21 @@ describe('OrderController', () => {
         expect(mockResponse.json).toHaveBeenCalledWith(mockOrder)
     })
 
+    it('getOrder - should return error with 400 status', async () => {
+        const mockError = new Error('Failed to get orders')
+        findOrderByIdUseCase.execute = vi
+            .fn()
+            .mockResolvedValue(Left(mockError))
+
+        await controller.getOrder(
+            mockRequest as Request,
+            mockResponse as Response
+        )
+
+        expect(mockResponse.status).toHaveBeenCalledWith(400)
+        expect(mockResponse.json).toHaveBeenCalledWith(mockError.message)
+    })
+
     it('prepareOrder - should prepare an order and return 200 status', async () => {
         const mockOrder = { id: '123', status: 'Preparing' }
         mockRequest = { params: { id: '123' } }
@@ -143,6 +186,19 @@ describe('OrderController', () => {
 
         expect(mockResponse.status).toHaveBeenCalledWith(200)
         expect(mockResponse.json).toHaveBeenCalledWith(mockOrder)
+    })
+
+    it('prepareOrder - should return error with 400 status', async () => {
+        const mockError = new Error('Failed to prepare order')
+        prepareOrderUseCase.execute = vi.fn().mockResolvedValue(Left(mockError))
+
+        await controller.prepareOrder(
+            mockRequest as Request,
+            mockResponse as Response
+        )
+
+        expect(mockResponse.status).toHaveBeenCalledWith(400)
+        expect(mockResponse.json).toHaveBeenCalledWith(mockError.message)
     })
 
     it('finishPrepareOrder - should finish preparing an order and return 200 status', async () => {
@@ -161,6 +217,21 @@ describe('OrderController', () => {
         expect(mockResponse.json).toHaveBeenCalledWith(mockOrder)
     })
 
+    it('finishPrepareOrder - should return error with 400 status', async () => {
+        const mockError = new Error('Failed to finish prepare order')
+        finishPrepareOrderUseCase.execute = vi
+            .fn()
+            .mockResolvedValue(Left(mockError))
+
+        await controller.finishPrepareOrder(
+            mockRequest as Request,
+            mockResponse as Response
+        )
+
+        expect(mockResponse.status).toHaveBeenCalledWith(400)
+        expect(mockResponse.json).toHaveBeenCalledWith(mockError.message)
+    })
+
     it('finishOrder - should finish an order and return 200 status', async () => {
         const mockOrder = { id: '123', status: 'Finished' }
         mockRequest = { params: { id: '123' } }
@@ -173,6 +244,19 @@ describe('OrderController', () => {
 
         expect(mockResponse.status).toHaveBeenCalledWith(200)
         expect(mockResponse.json).toHaveBeenCalledWith(mockOrder)
+    })
+
+    it('finishOrder - should return error with 400 status', async () => {
+        const mockError = new Error('Failed to finish order')
+        finishOrderUseCase.execute = vi.fn().mockResolvedValue(Left(mockError))
+
+        await controller.finishOrder(
+            mockRequest as Request,
+            mockResponse as Response
+        )
+
+        expect(mockResponse.status).toHaveBeenCalledWith(400)
+        expect(mockResponse.json).toHaveBeenCalledWith(mockError.message)
     })
 
     it('should return 400 status if an error occurs in any use case', async () => {

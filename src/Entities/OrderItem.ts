@@ -45,6 +45,13 @@ export default class OrderItem {
             throw new ProductQuantityGT0Exception()
         }
 
+        try {
+            if (this.product.getPrice() <= 0) {
+                throw new ProductPriceGT0Exception()
+            }
+        } catch (error) {
+            console.log(error)
+        }
         if (this.product.getPrice() <= 0) {
             throw new ProductPriceGT0Exception()
         }

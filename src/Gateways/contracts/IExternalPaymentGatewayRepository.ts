@@ -1,5 +1,4 @@
 import { Either } from '../../@Shared/Either'
-import { Payment } from '../../Entities/Payment'
 
 export default interface IExternalPaymentGatewayRepository {
     checkout(
