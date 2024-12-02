@@ -6,6 +6,7 @@ import { InputFinishOrderDTO } from '../../../src/UseCases/Order/finish/finish.d
 import Order from '../../../src/Entities/Order'
 import { StatusEnum } from '../../../src/Entities/Enums/StatusEnum'
 import StatusOrderException from '../../../src/@Shared/StatusOrderException'
+import Customer from '../../../src/Entities/Customer'
 
 describe('FinishOrderUseCase', () => {
     let finishOrderUseCase: FinishOrderUseCase
@@ -40,7 +41,8 @@ describe('FinishOrderUseCase', () => {
     })
 
     it('should update the order status to "Finished" when the order is "Ready"', async () => {
-        const mockOrder = new Order('customer-id', '123', StatusEnum.Ready)
+        const customer = new Customer('John Doe', '76176752086')
+        const mockOrder = new Order(customer, '123', StatusEnum.Ready)
         mockOrder.updateStatus = vi.fn()
 
         mockOrderRepository.get = vi.fn().mockResolvedValue(Right(mockOrder))
@@ -59,8 +61,9 @@ describe('FinishOrderUseCase', () => {
     })
 
     it('should return an error if the current order status does not allow finishing', async () => {
+        const customer = new Customer('John Doe', '76176752086')
         const invalidStatusOrder = new Order(
-            'customer-id',
+            customer,
             '123',
             StatusEnum.Preparing
         )

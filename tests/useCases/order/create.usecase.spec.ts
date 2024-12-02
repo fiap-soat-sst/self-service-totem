@@ -1,7 +1,6 @@
 import { describe, it, beforeEach, expect, vi } from 'vitest'
 import CreateOrderUseCase from '../../../src/UseCases/Order/create/create.usecase'
 import { Left, Right, isRight } from '../../../src/@Shared/Either'
-import { ICustomerGatewayRepository } from '../../../src/Gateways/contracts/ICustomerGatewayRepository'
 import { IOrderGatewayRepository } from '../../../src/Gateways/contracts/IOrderGatewayRepository'
 import { IProductGatewayRepository } from '../../../src/Gateways/contracts/IProductGatewayRepository'
 import Customer from '../../../src/Entities/Customer'
@@ -12,26 +11,11 @@ import Product from '../../../src/Entities/Product'
 describe('CreateOrderUseCase', () => {
     let createOrderUseCase: CreateOrderUseCase
     let mockOrderRepository: Partial<IOrderGatewayRepository>
-    let mockCustomerRepository: Partial<ICustomerGatewayRepository>
     let mockProductRepository: Partial<IProductGatewayRepository>
 
     beforeEach(() => {
         mockOrderRepository = {
             create: vi.fn().mockResolvedValue(Right('order-id')),
-        }
-
-        mockCustomerRepository = {
-            findByCpf: vi
-                .fn()
-                .mockResolvedValue(
-                    Right(
-                        new Customer(
-                            'John Doe',
-                            '40418376000',
-                            'teste@email.com'
-                        )
-                    )
-                ),
         }
 
         mockProductRepository = {
@@ -54,7 +38,6 @@ describe('CreateOrderUseCase', () => {
 
         createOrderUseCase = new CreateOrderUseCase(
             mockOrderRepository as IOrderGatewayRepository,
-            mockCustomerRepository as ICustomerGatewayRepository,
             mockProductRepository as IProductGatewayRepository
         )
     })
@@ -74,9 +57,6 @@ describe('CreateOrderUseCase', () => {
             expect(result.value).toBe('order-id')
         }
 
-        expect(mockCustomerRepository.findByCpf).toHaveBeenCalledWith(
-            '40418376000'
-        )
         expect(mockProductRepository.findById).toHaveBeenCalledWith(
             'valid-product-id'
         )
@@ -93,7 +73,6 @@ describe('CreateOrderUseCase', () => {
         const result = await createOrderUseCase.execute(orderCustomer)
 
         expect(result).toEqual(Right('order-id'))
-        expect(mockCustomerRepository.findByCpf).not.toHaveBeenCalled()
         expect(mockProductRepository.findById).toHaveBeenCalledWith(
             'valid-product-id'
         )

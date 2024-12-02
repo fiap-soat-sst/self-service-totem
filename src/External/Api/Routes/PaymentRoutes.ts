@@ -1,71 +1,65 @@
 import { Router } from 'express'
 import PaymentController from '../../../Controllers/PaymentController'
-import PaymentRepository from '../../Database/Repositories/DatabaseRepository/PaymentRepository'
 import CheckoutUseCase from '../../../UseCases/Payment/checkout/checkout.usecase'
-import GetByIdUseCase from '../../../UseCases/Payment/getById/getById.usecase'
 import UpdateStatusUseCase from '../../../UseCases/Payment/updateStatus/uptateStatus.usecase'
 import OrderRepository from '../../Database/Repositories/DatabaseRepository/OrderRepository'
-import PaymentGatewayRepository from '../../../Gateways/Payment/PaymentGatewayRepository'
-import ListUseCase from '../../../UseCases/Payment/list/list.usecase'
 import ExternalPaymentGatewayRepository from '../../../Gateways/Payment/ExternalPaymentGatewayRepository'
-import { MercadoPagoExternal } from '../../Payment/MercadoPagoExternal'
+import { MsPayment } from '../../Payment/MsPayment'
+import ITransactionRepository from '../../Database/Repositories/Contracts/ITransactionRepository'
+import { ITransactionGatewayRepository } from '../../../Gateways/contracts/ITransactionGatewayRepository'
+import OrderGatewayRepository from '../../../Gateways/Order/OrderGatewayRepository'
+import TransactionRepository from '../../Database/Repositories/DatabaseRepository/TransactionRepository'
+import TransactionGatewayRepository from '../../../Gateways/Transaction/TransactionGatewayRepository'
 import { RouteTypeEnum } from '../../../Entities/Enums/RouteType'
 
 export default class PaymentRoutes {
-    private readonly paymentRepository: PaymentRepository
-    private readonly mercadoPagoExternal: MercadoPagoExternal
     private readonly orderRepository: OrderRepository
+    private readonly orderGatewayRepository: OrderGatewayRepository
+    private readonly msPayment: MsPayment
     private readonly paymentController: PaymentController
     private readonly checkoutUseCase: CheckoutUseCase
-    private readonly getByIdUseCase: GetByIdUseCase
     private readonly updateStatusUseCase: UpdateStatusUseCase
-    private readonly listUseCase: ListUseCase
-    private readonly paymentGatewayRepository: PaymentGatewayRepository
     private readonly externalPaymentRepository: ExternalPaymentGatewayRepository
+    private readonly transactionRepository: ITransactionRepository
+    private readonly transactionGatewayRepository: ITransactionGatewayRepository
 
     constructor() {
         this.orderRepository = new OrderRepository()
-        this.paymentRepository = new PaymentRepository(this.orderRepository)
-        this.mercadoPagoExternal = new MercadoPagoExternal()
-        this.paymentGatewayRepository = new PaymentGatewayRepository(
-            this.paymentRepository
+        this.orderGatewayRepository = new OrderGatewayRepository(
+            this.orderRepository
         )
+        this.msPayment = new MsPayment()
+
         this.externalPaymentRepository = new ExternalPaymentGatewayRepository(
-            this.mercadoPagoExternal
-        )
-        this.checkoutUseCase = new CheckoutUseCase(
-            this.paymentGatewayRepository,
-            this.externalPaymentRepository
-        )
-        this.getByIdUseCase = new GetByIdUseCase(this.paymentGatewayRepository)
-        this.updateStatusUseCase = new UpdateStatusUseCase(
-            this.paymentGatewayRepository,
-            this.externalPaymentRepository
+            this.msPayment
         )
 
-        this.listUseCase = new ListUseCase(this.paymentGatewayRepository)
+        this.transactionRepository = new TransactionRepository()
+        this.transactionGatewayRepository = new TransactionGatewayRepository(
+            this.transactionRepository
+        )
+        this.checkoutUseCase = new CheckoutUseCase(
+            this.orderGatewayRepository,
+            this.externalPaymentRepository,
+            this.transactionGatewayRepository
+        )
+
+        this.updateStatusUseCase = new UpdateStatusUseCase(
+            this.transactionGatewayRepository,
+            this.orderGatewayRepository
+        )
 
         this.paymentController = new PaymentController(
             this.checkoutUseCase,
-            this.getByIdUseCase,
-            this.updateStatusUseCase,
-            this.listUseCase
+            this.updateStatusUseCase
         )
     }
 
     buildRouter(): Router {
         const router = Router()
-        router.get(
-            `/${RouteTypeEnum.PROTECTED}`,
-            this.paymentController.list.bind(this)
-        )
         router.post('/checkout', this.paymentController.checkout.bind(this))
-        router.get(
-            `/${RouteTypeEnum.PROTECTED}/:id`,
-            this.paymentController.getById.bind(this)
-        )
         router.post(
-            `/${RouteTypeEnum.INTEGRATION}/update-status/:id`,
+            `/${RouteTypeEnum.PROTECTED}/update-status/:orderId`,
             this.paymentController.updateStatus.bind(this)
         )
         return router

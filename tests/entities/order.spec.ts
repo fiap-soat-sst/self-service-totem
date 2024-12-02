@@ -9,12 +9,15 @@ import StatusOrderException from '../../src/@Shared/StatusOrderException'
 import { createMockProduct } from '../mocks/product.mock'
 import OrderWithOutProductsException from '../../src/@Shared/OrderWithOutProductsException'
 import InvalidCustomerException from '../../src/@Shared/InvalidCustomerException'
+import Customer from '../../src/Entities/Customer'
 
 describe('Order entity', () => {
     let order: Order
+    let customer: Customer
 
     beforeEach(() => {
-        order = new Order('John Doe')
+        customer = new Customer('John Doe', '76176752086')
+        order = new Order(customer)
     })
 
     it('should create and return an order', () => {
@@ -34,7 +37,10 @@ describe('Order entity', () => {
 
     it('should create a new order', () => {
         expect(order).toBeInstanceOf(Order)
-        expect(order.getCustomer()).toBe('John Doe')
+        expect(order.getCustomer()).toEqual({
+            name: 'John Doe',
+            cpf: { cpf: '76176752086' },
+        })
         expect(order.getStatus()).toBe(StatusEnum.Received)
         expect(order.getCreatedAt()).toBeInstanceOf(Date)
         expect(order.isClosed()).toBe(false)
@@ -118,15 +124,10 @@ describe('Order entity', () => {
         }).toThrow()
     })
 
-    it('should throw an error if the customer is invalid', () => {
-        expect(() => {
-            order.updateCustomer('')
-        }).toThrow()
-    })
-
     it('should throw an error on create if the status != Received', () => {
+        const customer = new Customer('John Doe', '76176752086')
         expect(() => {
-            new Order('John Doe', null, StatusEnum.Preparing)
+            new Order(customer, null, StatusEnum.Preparing)
         }).toThrow(StatusOrderException)
     })
 
@@ -171,10 +172,11 @@ describe('Order entity', () => {
             10,
             'Muito suculento'
         )
+        const customer = new Customer('John Doe', '76176752086')
         const orderItem = new OrderItem(product, 1)
 
         const order = new Order(
-            'John Doe',
+            customer,
             '123456789',
             StatusEnum.Received,
             new Date()
@@ -184,17 +186,15 @@ describe('Order entity', () => {
         expect(order.toJSON()).toEqual({
             id: expect.any(String),
             items: [orderItem.toJSON()],
-            customer: 'John Doe',
+            customer: {
+                name: 'John Doe',
+                cpf: { cpf: '76176752086' },
+            },
             status: StatusEnum.Received,
             closed: false,
             total: 10,
             createdAt: expect.any(Date),
         })
-    })
-
-    it('should update the customer', () => {
-        order.updateCustomer('Jane Doe')
-        expect(order.getCustomer()).toBe('Jane Doe')
     })
 
     it('should closed the order', () => {
@@ -228,17 +228,5 @@ describe('Order entity', () => {
         expect(() => {
             order.closeOrder()
         }).toThrow(OrderWithOutProductsException)
-    })
-
-    it('should throw an error if no customer was provided', () => {
-        expect(() => {
-            order.updateCustomer('')
-        }).toThrow(InvalidCustomerException)
-    })
-
-    it('should throw an error if the new order has a different status of received', () => {
-        expect(() => {
-            new Order('John Doe', null, StatusEnum.Preparing, new Date())
-        }).toThrow(StatusOrderException)
     })
 })
