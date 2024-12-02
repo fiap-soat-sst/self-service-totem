@@ -33,8 +33,10 @@ export default class PaymentController {
     async updateStatus(req: Request, res: Response): Promise<void> {
         const { orderId } = req.params
         const { status } = req.body
+        const { token } = req.headers
 
         const result = await this.updateStatusUseCase.execute({
+            token: token as string,
             orderId,
             newStatus: status,
         })
