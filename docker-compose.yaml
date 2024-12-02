@@ -22,7 +22,6 @@ services:
                 limits:
                     cpus: '1'
                     memory: 1GB
-        command: sh -c "npm run migration:up"
     app:
         build: .
         restart: on-failure
@@ -46,7 +45,7 @@ services:
                 limits:
                     cpus: '1'
                     memory: 1GB
-        command: sh -c "npm start && npm run migration:up"
+        command: sh -c "npm start"
     mysql_self:
         image: mysql:5.7
         restart: on-failure

@@ -10,6 +10,11 @@ export default class Cpf {
     }
 
     private isValid(cpf: string): boolean {
+        // Só verifica caso a string não seja vazia
+        if (!cpf) {
+            return true
+        }
+
         // Verificar se possui 14 dígitos (com máscara)
         if (cpf.length === 14) {
             // Remover caracteres não numéricos

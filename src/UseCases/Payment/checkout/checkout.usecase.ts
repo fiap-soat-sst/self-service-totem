@@ -1,65 +1,45 @@
 import { Either, isLeft, Left, Right } from '../../../@Shared/Either'
-import { PaymentStatus } from '../../../Entities/Enums/PaymentStatusEnum'
-import Order from '../../../Entities/Order'
-import { StatusEnum } from '../../../Entities/Enums/StatusEnum'
-import { Payment } from '../../../Entities/Payment'
 import IExternalPaymentGatewayRepository from '../../../Gateways/contracts/IExternalPaymentGatewayRepository'
-import IPaymentGatewayRepository from '../../../Gateways/contracts/IPaymentGatewayRepository'
+import { IOrderGatewayRepository } from '../../../Gateways/contracts/IOrderGatewayRepository'
+import { ITransactionGatewayRepository } from '../../../Gateways/contracts/ITransactionGatewayRepository'
 import { InputCheckoutDTO, OutputCheckoutDTO } from './checkout.dto'
+import Transaction from '../../../Entities/Transaction'
 
 export default class CheckoutUseCase {
     constructor(
-        private readonly paymentRepository: IPaymentGatewayRepository,
-        private readonly externalPaymentRepository: IExternalPaymentGatewayRepository
+        private readonly orderRepository: IOrderGatewayRepository,
+        private readonly externalPaymentRepository: IExternalPaymentGatewayRepository,
+        private readonly transactionRepository: ITransactionGatewayRepository
     ) {}
 
     async execute(
         input: InputCheckoutDTO
     ): Promise<Either<Error, OutputCheckoutDTO>> {
-        const payment = new Payment(
-            'TempId',
+        const order = await this.orderRepository.get(input.orderId)
+
+        if (isLeft(order)) {
+            return Left<Error>(order.value)
+        }
+
+        const orderJson = order.value.toJSON()
+
+        const result = await this.externalPaymentRepository.checkout(
+            input.token,
             input.orderId,
-            PaymentStatus.INITIALIZED,
-            new Order('Jorginho', '1', StatusEnum.Received, new Date())
+            orderJson.total
         )
 
-        const paymentResult = await this.paymentRepository.checkout(payment)
-
-        if (isLeft(paymentResult)) {
-            return Left<Error>(paymentResult.value)
+        if (isLeft(result)) {
+            return Left<Error>(result.value)
         }
 
-        const qrCodeString =
-            await this.externalPaymentRepository.generateQrCodePaymentString(
-                paymentResult.value
-            )
+        const transaction = new Transaction()
+        transaction.paymentId = result.value.id
+        transaction.status = result.value.status
+        transaction.order = order.value
 
-        if (isLeft(qrCodeString)) {
-            await this.paymentRepository.updateStatus(
-                paymentResult.value.getId(),
-                PaymentStatus.ERROR
-            )
-            return Left<Error>(new Error('Erro ao gerar ordem de pagamento'))
-        }
+        await this.transactionRepository.save(transaction)
 
-        const order = paymentResult.value.getOrder()
-        let items: any[] = []
-        let total = 0
-
-        if (order instanceof Order) {
-            items = order.getItems()
-            total = order.getTotalOrderValue()
-        }
-
-        const outputPayment = {
-            id: paymentResult.value.getId(),
-            status: paymentResult.value.getStatus(),
-            total: total,
-            orderId: paymentResult.value.getOrderId(),
-            items: items.map((item) => item.toJSON()),
-            qr_code_data: qrCodeString.value,
-        }
-
-        return Right(outputPayment)
+        return Right(result.value)
     }
 }

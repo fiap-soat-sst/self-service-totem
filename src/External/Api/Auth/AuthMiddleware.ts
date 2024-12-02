@@ -32,7 +32,11 @@ export const authMiddleware = (verifyAuthToken: VerifyAuthToken) => {
                 userAuth.getType() === UserTypeEnum.UNREGISTERED &&
                 !containsProtected
             ) {
-                req.body = { ...req.body, user_name: userAuth.getName() }
+                req.body = {
+                    ...req.body,
+                    user_name: userAuth.getName(),
+                    cpf: '',
+                }
                 return next()
             }
 

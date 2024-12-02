@@ -3,7 +3,6 @@ import { AppDataSource } from '../../MySqlAdapter'
 import { Either, Right, Left } from '../../../../@Shared/Either'
 import { StatusEnum } from '../../../../Entities/Enums/StatusEnum'
 import { Order as model } from '../../Models/Order'
-import { Customer as CustomerModel } from '../../Models/Customer'
 import { OrderItem as OrderItemModel } from '../../Models/OrderItem'
 import { Product as ProductModel } from '../../Models/Product'
 import IOrderRepository from '../Contracts/IOrderRepository'
@@ -14,13 +13,11 @@ import OrderItem from '../../../../Entities/OrderItem'
 
 export default class OrderRepository implements IOrderRepository {
     private repository: Repository<model>
-    private repositoryCustomer: Repository<CustomerModel>
     private repositoryProduct: Repository<ProductModel>
     private repositoryOrderItem: Repository<OrderItemModel>
 
     constructor() {
         this.repository = AppDataSource.getRepository(model)
-        this.repositoryCustomer = AppDataSource.getRepository(CustomerModel)
         this.repositoryProduct = AppDataSource.getRepository(ProductModel)
         this.repositoryOrderItem = AppDataSource.getRepository(OrderItemModel)
     }
@@ -30,19 +27,8 @@ export default class OrderRepository implements IOrderRepository {
             const customer = order.getCustomer()
             const orderModel = new model()
             orderModel.orderItems = []
-
-            if (customer instanceof Customer) {
-                const customerFind = await this.repositoryCustomer.findOneBy({
-                    cpf: customer.getCpf(),
-                })
-
-                if (customerFind) {
-                    orderModel.customer = customerFind
-                    orderModel.nameCustomer = customerFind.name
-                }
-            } else if (typeof customer === 'string') {
-                orderModel.nameCustomer = customer
-            }
+            orderModel.nameCustomer = customer.getName()
+            orderModel.cpfCustomer = customer.getCpf() ?? ''
 
             const orderItems = order.getItems()
             const productIds = orderItems.map((item) =>
@@ -94,19 +80,7 @@ export default class OrderRepository implements IOrderRepository {
                 orderToUpdate.status = orderJSON.status
 
                 const customer = order.getCustomer()
-                if (customer instanceof Customer) {
-                    const customerFind =
-                        await this.repositoryCustomer.findOneBy({
-                            cpf: customer.getCpf(),
-                        })
-
-                    if (customerFind) {
-                        orderToUpdate.customer = customerFind
-                        orderToUpdate.nameCustomer = customerFind.name
-                    }
-                } else if (typeof customer === 'string') {
-                    orderToUpdate.nameCustomer = customer
-                }
+                orderToUpdate.nameCustomer = customer.getName()
 
                 const orderItems = order.getItems()
                 const productIds = orderItems.map((item) =>
@@ -158,25 +132,15 @@ export default class OrderRepository implements IOrderRepository {
                 where: {
                     id,
                 },
-                relations: ['customer', 'orderItems', 'orderItems.product'],
+                relations: ['orderItems', 'orderItems.product'],
             })
 
             if (!orderFind) {
                 return Left<Error>(new Error('Order not found'))
             }
 
-            let customer: Customer | null = null
-
-            if (orderFind.customer) {
-                customer = new Customer(
-                    orderFind.customer.name,
-                    orderFind.customer.cpf,
-                    orderFind.customer.email,
-                    orderFind.customer.id
-                )
-            }
-
             const customerName = orderFind.nameCustomer
+            const customer: Customer = new Customer(customerName, '')
 
             const order = new Order(
                 customer ?? customerName,
@@ -206,7 +170,7 @@ export default class OrderRepository implements IOrderRepository {
     async getAll(): Promise<Either<Error, Order[]>> {
         try {
             const ordersFind = await this.repository.find({
-                relations: ['customer', 'orderItems', 'orderItems.product'],
+                relations: ['orderItems', 'orderItems.product'],
             })
 
             if (!ordersFind) {
@@ -214,18 +178,8 @@ export default class OrderRepository implements IOrderRepository {
             }
 
             const orders = ordersFind.map((order) => {
-                let customer: Customer | null = null
-
-                if (order.customer) {
-                    customer = new Customer(
-                        order.customer.name,
-                        order.customer.cpf,
-                        order.customer.email,
-                        order.customer.id
-                    )
-                }
-
                 const customerName = order.nameCustomer
+                const customer: Customer = new Customer(customerName, '')
 
                 const orderEntity = new Order(
                     customer ?? customerName,
@@ -270,18 +224,8 @@ export default class OrderRepository implements IOrderRepository {
             }
 
             const orders = ordersFind.map((order) => {
-                let customer: Customer | null = null
-
-                if (order.customer) {
-                    customer = new Customer(
-                        order.customer.name,
-                        order.customer.cpf,
-                        order.customer.email,
-                        order.customer.id
-                    )
-                }
-
                 const customerName = order.nameCustomer
+                const customer: Customer = new Customer(customerName, '')
 
                 const orderEntity = new Order(
                     customer ?? customerName,

@@ -1,5 +1,4 @@
 import { Either } from '../../@Shared/Either'
-import { Payment } from '../../Entities/Payment'
 import IExternalPaymentRepository from '../../External/Payment/Contracts/IExternalPaymentRepository'
 import IExternalPaymentGatewayRepository from '../contracts/IExternalPaymentGatewayRepository'
 
@@ -8,10 +7,23 @@ export default class ExternalPaymentGatewayRepository
 {
     constructor(private readonly external: IExternalPaymentRepository) {}
 
-    async generateQrCodePaymentString(
-        payment: Payment
-    ): Promise<Either<Error, String>> {
-        return this.external.generateQrCodePaymentString(payment)
+    async checkout(
+        token: string,
+        orderId: string,
+        total: number
+    ): Promise<
+        Either<
+            Error,
+            {
+                id: string
+                status: string
+                total: number
+                orderId: string
+                qr_code_data: string
+            }
+        >
+    > {
+        return this.external.checkout(token, orderId, total)
     }
 
     async getPaymentStatusById(

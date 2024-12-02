@@ -6,6 +6,7 @@ import { StatusEnum } from '../../../src/Entities/Enums/StatusEnum'
 import StatusOrderException from '../../../src/@Shared/StatusOrderException'
 import FinishPrepareOrderUseCase from '../../../src/UseCases/Order/finishPrepare/finishPrepare.usecase'
 import { InputFinishPrepareOrderDTO } from '../../../src/UseCases/Order/finishPrepare/finishPrepare.dto'
+import Customer from '../../../src/Entities/Customer'
 
 describe('FinishPrepareOrderUseCase', () => {
     let finishPrepareOrderUseCase: FinishPrepareOrderUseCase
@@ -40,7 +41,8 @@ describe('FinishPrepareOrderUseCase', () => {
     })
 
     it('should update the order status to "Ready" when the order is "Preparing"', async () => {
-        const mockOrder = new Order('customer-id', '123', StatusEnum.Preparing)
+        const customer = new Customer('John Doe', '76176752086')
+        const mockOrder = new Order(customer, '123', StatusEnum.Preparing)
         mockOrder.updateStatus = vi.fn()
 
         mockOrderRepository.get = vi.fn().mockResolvedValue(Right(mockOrder))
@@ -59,8 +61,9 @@ describe('FinishPrepareOrderUseCase', () => {
     })
 
     it('should return an error if the current order status does not allow Ready', async () => {
+        const customer = new Customer('John Doe', '76176752086')
         const invalidStatusOrder = new Order(
-            'customer-id',
+            customer,
             '123',
             StatusEnum.Received
         )
