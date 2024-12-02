@@ -4,6 +4,7 @@ import { StatusEnum } from '../../../src/Entities/Enums/StatusEnum'
 import { IOrderGatewayRepository } from '../../../src/Gateways/contracts/IOrderGatewayRepository'
 import ListOrdersUseCase from '../../../src/UseCases/Order/list/list.usecase'
 import { isLeft, isRight, Left, Right } from '../../../src/@Shared/Either'
+import Customer from '../../../src/Entities/Customer'
 
 describe('ListOrdersUseCase', () => {
     let listOrdersUseCase: ListOrdersUseCase
@@ -11,7 +12,8 @@ describe('ListOrdersUseCase', () => {
     let mockOrder: Order
 
     beforeEach(() => {
-        mockOrder = new Order('customer-id', 'order-id', StatusEnum.Received)
+        const customer = new Customer('John Doe', '76176752086')
+        mockOrder = new Order(customer, 'order-id', StatusEnum.Received)
         mockOrder.toJSON = vi.fn().mockReturnValue({
             id: 'order-id',
             items: [

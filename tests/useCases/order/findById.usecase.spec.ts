@@ -4,6 +4,7 @@ import { IOrderGatewayRepository } from '../../../src/Gateways/contracts/IOrderG
 import Order from '../../../src/Entities/Order'
 import { InputFindOrderByIdDTO } from '../../../src/UseCases/Order/findById/findById.dto'
 import { isLeft, isRight, Left, Right } from '../../../src/@Shared/Either'
+import Customer from '../../../src/Entities/Customer'
 
 describe('FindOrderByIdUseCase', () => {
     let findOrderByIdUseCase: FindOrderByIdUseCase
@@ -21,7 +22,8 @@ describe('FindOrderByIdUseCase', () => {
 
     it('should return order details when order is found', async () => {
         const orderId = 'order-id'
-        const mockOrder = new Order(orderId)
+        const customer = new Customer('John Doe', '76176752086')
+        const mockOrder = new Order(customer)
 
         mockOrderRepository.get = vi.fn().mockResolvedValue(Right(mockOrder))
 
