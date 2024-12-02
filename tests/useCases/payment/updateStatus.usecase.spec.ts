@@ -7,11 +7,16 @@ import { randomUUID } from 'crypto'
 import { ITransactionGatewayRepository } from '../../../src/Gateways/contracts/ITransactionGatewayRepository'
 import { IOrderGatewayRepository } from '../../../src/Gateways/contracts/IOrderGatewayRepository'
 import Transaction from '../../../src/Entities/Transaction'
+import IExternalMakingGatewayRepository from '../../../src/Gateways/contracts/IExternalMakingGatewayRepository'
+import Order from '../../../src/Entities/Order'
+import Customer from '../../../src/Entities/Customer'
+import { StatusEnum } from '../../../src/Entities/Enums/StatusEnum'
 
 describe('UpdateStatusUseCase', () => {
     let usecase: UpdateStatusUseCase
     let mockTransactionRepository: ITransactionGatewayRepository
     let mockOrderRepository: IOrderGatewayRepository
+    let mockMakingRepository: IExternalMakingGatewayRepository
 
     beforeEach(() => {
         mockTransactionRepository = {
@@ -28,14 +33,20 @@ describe('UpdateStatusUseCase', () => {
             list: vi.fn(),
         }
 
+        mockMakingRepository = {
+            create: vi.fn(),
+        }
+
         usecase = new UpdateStatusUseCase(
             mockTransactionRepository as any,
-            mockOrderRepository as any
+            mockOrderRepository as any,
+            mockMakingRepository as any
         )
     })
 
     it('should return an error if transaction retrieval fails', async () => {
         const input: InputUpdateStatusDTO = {
+            token: 'valid-token',
             orderId: randomUUID(),
             newStatus: 'approved',
         }
@@ -54,6 +65,7 @@ describe('UpdateStatusUseCase', () => {
 
     it('should return an error if order retrieval fails', async () => {
         const input: InputUpdateStatusDTO = {
+            token: 'valid-token',
             orderId: randomUUID(),
             newStatus: 'approved',
         }
@@ -76,6 +88,7 @@ describe('UpdateStatusUseCase', () => {
 
     it('should update status to APPROVED if newStatus is approved', async () => {
         const input: InputUpdateStatusDTO = {
+            token: 'valid-token',
             orderId: randomUUID(),
             newStatus: 'approved',
         }
@@ -84,8 +97,18 @@ describe('UpdateStatusUseCase', () => {
             paymentId: randomUUID(),
             status: PaymentStatus.APPROVED,
         }
-        const mockOrder = { id: randomUUID() }
 
+        // Criar o mock de Customer para o pedido
+        const mockCustomer = new Customer('John Doe', '76319591021')
+
+        // Criar uma instância válida da classe Order
+        const mockOrder = new Order(
+            mockCustomer,
+            randomUUID(),
+            StatusEnum.Received
+        )
+
+        // Mock dos repositórios
         mockTransactionRepository.get = vi
             .fn()
             .mockResolvedValue(Right(mockTransaction))
@@ -93,6 +116,19 @@ describe('UpdateStatusUseCase', () => {
         mockTransactionRepository.save = vi
             .fn()
             .mockResolvedValue(Right('Transaction saved successfully'))
+
+        const mockMaking = {
+            id: randomUUID(),
+            status: 'status da cozinha',
+        }
+
+        mockMakingRepository.create = vi
+            .fn()
+            .mockResolvedValue(Right(mockMaking))
+
+        mockOrderRepository.update = vi
+            .fn()
+            .mockResolvedValue(Right('Order updated successfully'))
 
         const result = await usecase.execute(input)
 
@@ -109,6 +145,7 @@ describe('UpdateStatusUseCase', () => {
 
     it('should update status to DECLINED if newStatus is not approved', async () => {
         const input: InputUpdateStatusDTO = {
+            token: 'valid-token',
             orderId: randomUUID(),
             newStatus: 'declined',
         }

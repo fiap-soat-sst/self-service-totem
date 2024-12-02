@@ -11,15 +11,19 @@ import OrderGatewayRepository from '../../../Gateways/Order/OrderGatewayReposito
 import TransactionRepository from '../../Database/Repositories/DatabaseRepository/TransactionRepository'
 import TransactionGatewayRepository from '../../../Gateways/Transaction/TransactionGatewayRepository'
 import { RouteTypeEnum } from '../../../Entities/Enums/RouteType'
+import MsMaking from '../../Making/MsMaking'
+import ExternalMakingGatewayRepository from '../../../Gateways/Making/ExternalMakingGatewayRepository'
 
 export default class PaymentRoutes {
     private readonly orderRepository: OrderRepository
     private readonly orderGatewayRepository: OrderGatewayRepository
     private readonly msPayment: MsPayment
+    private readonly msMaking: MsMaking
     private readonly paymentController: PaymentController
     private readonly checkoutUseCase: CheckoutUseCase
     private readonly updateStatusUseCase: UpdateStatusUseCase
     private readonly externalPaymentRepository: ExternalPaymentGatewayRepository
+    private readonly externalMakingRepository: ExternalMakingGatewayRepository
     private readonly transactionRepository: ITransactionRepository
     private readonly transactionGatewayRepository: ITransactionGatewayRepository
 
@@ -44,9 +48,16 @@ export default class PaymentRoutes {
             this.transactionGatewayRepository
         )
 
+        this.msMaking = new MsMaking()
+
+        this.externalMakingRepository = new ExternalMakingGatewayRepository(
+            this.msMaking
+        )
+
         this.updateStatusUseCase = new UpdateStatusUseCase(
             this.transactionGatewayRepository,
-            this.orderGatewayRepository
+            this.orderGatewayRepository,
+            this.externalMakingRepository
         )
 
         this.paymentController = new PaymentController(

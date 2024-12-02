@@ -20,7 +20,8 @@ export class MsPayment implements IExternalPaymentGatewayRepository {
         >
     > {
         try {
-            const baseURL = process.env.BASE_URL || 'http://localhost:3001'
+            const baseURL =
+                process.env.BASE_URL_PAYMENT || 'http://localhost:3001'
 
             const response = await axios.post(
                 `${baseURL}/api/payment/checkout`,
