@@ -90,6 +90,9 @@ describe('PaymentController', () => {
                 body: {
                     status: 'paid',
                 },
+                headers: {
+                    token: 'valid-token',
+                },
             } as unknown as Request
             const mockResponse = {
                 status: vi.fn().mockReturnThis(),
@@ -104,6 +107,7 @@ describe('PaymentController', () => {
             await paymentController.updateStatus(mockRequest, mockResponse)
 
             expect(updateStatusUseCaseMock.execute).toHaveBeenCalledWith({
+                token: 'valid-token',
                 orderId: '1234',
                 newStatus: 'paid',
             })
@@ -120,6 +124,9 @@ describe('PaymentController', () => {
                 },
                 body: {
                     status: 'paid',
+                },
+                headers: {
+                    token: 'valid-token',
                 },
             } as unknown as Request
             const mockResponse = {
