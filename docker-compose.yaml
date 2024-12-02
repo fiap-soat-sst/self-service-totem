@@ -40,6 +40,7 @@ services:
             DB_PASSWORD: 'MfDZk"rTtn[f>j%'
             DB_DATABASE: 'self-service'
             PORT: 3000
+            JWT_SECRET: '3k{{$${?^d45o1bja6you8d&k5m;+n)t$$<{{$${!]1d/:=(:6j=d*|4::)]:!5{{`]z'
         deploy:
             resources:
                 limits:

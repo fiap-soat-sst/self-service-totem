@@ -6,6 +6,8 @@ import { Order } from './Models/Order'
 import { OrderItem } from './Models/OrderItem'
 import { CategoryEnum } from '../../Entities/Enums/CategoryEnum'
 import { Transaction } from './Models/Transaction'
+import dotenv from 'dotenv'
+dotenv.config()
 
 export const AppDataSource = new DataSource({
     type: 'mysql',
