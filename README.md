@@ -1,13 +1,14 @@
 # SELF SERVICE TOTEM
 
-<img alt="Node Version" src="https://img.shields.io/badge/Node_Version-20.18-green"> [![Setup and build](https://github.com/evilfeeh/self-service-totem/actions/workflows/setup-build-pipeline.yml/badge.svg)](https://github.com/evilfeeh/self-service-totem/actions/workflows/setup-build-pipeline.yml) ![coverage](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/evilfeeh/b08eb2c7df611955dd487f17d2a4c340/raw/coverage.json)
+<img alt="Node Version" src="https://img.shields.io/badge/Node_Version-20.18-green"> [![Setup and build](https://github.com/fiap-soat-sst/self-service-totem/actions/workflows/setup-build-pipeline.yml/badge.svg)](https://github.com/fiap-soat-sst/self-service-totem/actions/workflows/setup-build-pipeline.yml) ![coverage](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/evilfeeh/b08eb2c7df611955dd487f17d2a4c340/raw/coverage.json) <img src="https://img.shields.io/github/v/release/fiap-soat-sst/self-service-totem?display_name=tag&label=Release%20Version"> 
+
 
 This Project about Tech Challenge from FIAP
-A monolith backend Developed with TypeScript, Docker, DDD and hexagonal architecture.
+A monolith backend Developed with TypeScript, Docker, DDD, and hexagonal architecture.
 
 ## ABOUT
 
-We're introducing an Software that aims to optimize the self-service process in fast-food restaurants. Through an interactive totem, customers can place their orders quickly, conveniently and autonomously, reducing queues and speeding up service.
+We're introducing a Software that aims to optimize the self-service process in fast-food restaurants. Through an interactive totem, customers can place their orders quickly, conveniently, and autonomously, reducing queues and speeding up service.
 
 Our **Event Storming** can be found here: https://miro.com/app/board/uXjVKVP2yDY=/
 
@@ -15,7 +16,7 @@ For more details about the project, access: https://github.com/evilfeeh/self-ser
 
 ## POSTGRADUATION PHASES
 
-As this projects are being built due the FIAP postgraduation, we use the [github wiki](https://github.com/evilfeeh/self-service-totem/wiki) to documentation the details of each phase and also provide more information if necessary.
+As these projects are being built due to the FIAP postgraduation, we use the [github wiki](https://github.com/evilfeeh/self-service-totem/wiki) to document the details of each phase and also provide more information if necessary.
 
 ## FEATURES
 
@@ -23,7 +24,7 @@ As this projects are being built due the FIAP postgraduation, we use the [github
     -   [x] Register a new customer
     -   [x] identify a customer by their CPF
 -   Product:
-    -   [x] Create, update and delete a product
+    -   [x] Create, update, and delete a product
     -   [x] Find a product by category
 -   Orders:
     -   [x] Register a new order
@@ -32,11 +33,11 @@ As this projects are being built due the FIAP postgraduation, we use the [github
 
 ## ubiquitous Language Dictionary
 
--   Cliente (Customer): Person who will consume the order
+-   Cliente (Customer): The person who will consume the order
 -   Pedido (Order): The order with all customer's Items
 -   Cozinha (Kitchen): Team preparing the items of order
 -   Pagamento (Payment): Process to pay the order
--   Lanche, Acompanhamento, Bebida, Sobremesa: Items avaiable into the menu
+-   Lanche, Acompanhamento, Bebida, Sobremesa: Items available on the menu
 
 ## PREREQUISITES
 
@@ -62,14 +63,15 @@ Run the application with Docker Compose:
 docker compose up
 ```
 
-The apps runs into port 3000, it's possible to change the value port or other environments inside a .env file
+The app runs into port 3000, it's possible to change the value port or other environments inside a .env file
 
 To access the docs, access:
 `http://localhost:3000/public/docs`
 
 ## Accessing the API
 
-After running everything, you can use the `Kubectl` commands to ensure the pods are initialized. To access the Swagger aplication, you'll need to port fowarding the api.
+After running everything, you can use the `Kubectl` commands to ensure the initialization's pod.
+To access the Swagger application is required to port forwarding the API.
 
 Specify the API's pod name and run:
 
