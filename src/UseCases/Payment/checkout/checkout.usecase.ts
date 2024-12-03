@@ -23,6 +23,7 @@ export default class CheckoutUseCase {
 
         const orderJson = order.value.toJSON()
 
+        console.log('token -----> ', input.token)
         const result = await this.externalPaymentRepository.checkout(
             input.token,
             input.orderId,
