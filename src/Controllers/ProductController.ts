@@ -65,6 +65,7 @@ export default class ProductController {
     }
 
     async getProductbyCategory(req: Request, res: Response): Promise<void> {
+        console.log('4', req.params)
         const { category } = req.params
         const catEnum: CategoryEnum = category as CategoryEnum
 

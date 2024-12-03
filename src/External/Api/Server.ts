@@ -13,6 +13,7 @@ app.listen(port, () => {
 })
 
 app.get('/', (req, res) => {
+    console.log('1', req.path)
     res.redirect('/public/docs')
 })
 

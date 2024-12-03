@@ -14,6 +14,7 @@ export default class VerifyAuthToken {
 
     execute(token: string): AuthToken {
         try {
+            console.log('5', this.jwtSecret)
             jwt.verify(token, this.jwtSecret)
 
             const decoded = jwt.decode(token, { complete: true })
