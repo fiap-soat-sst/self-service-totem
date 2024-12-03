@@ -22,7 +22,7 @@ export class MsPayment implements IExternalPaymentGatewayRepository {
         try {
             const baseURL =
                 process.env.BASE_URL_PAYMENT || 'http://localhost:3001'
-
+            console.log('8', process.env.BASE_URL_PAYMENT)
             const response = await axios.post(
                 `${baseURL}/api/payment/checkout`,
                 {
@@ -45,6 +45,7 @@ export class MsPayment implements IExternalPaymentGatewayRepository {
                 qr_code_data: string
             }>(response.data)
         } catch (error) {
+            console.log('9', error)
             return Left<Error>(error as Error)
         }
     }
