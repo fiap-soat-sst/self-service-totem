@@ -6,7 +6,9 @@ import { RouteTypeEnum } from '../../../Entities/Enums/RouteType'
 export const authMiddleware = (verifyAuthToken: VerifyAuthToken) => {
     return (req: Request, res: Response, next: NextFunction) => {
         const path = req.path
+        console.log('2', path)
         const token = req.header('token')
+        console.log('3', token)
 
         const containsIntegration = path.includes(RouteTypeEnum.INTEGRATION)
 
