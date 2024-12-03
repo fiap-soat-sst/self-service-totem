@@ -78,6 +78,10 @@ Specify the API's pod name and run:
 ```bash
 kubectl port-forward <api-pod-name> 3000:3000
 ```
+# Coverage - taken from the last Pull Request
+![image](https://github.com/user-attachments/assets/08d8dacd-763b-4bb6-b916-191a8060887e)
+
+
 
 # PHASE 3 DATABASE JUSTIFICATION
 
