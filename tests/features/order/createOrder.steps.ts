@@ -1,7 +1,6 @@
 import { Given, When, Then } from '@cucumber/cucumber'
 import request from 'supertest'
 import jwt from 'jsonwebtoken'
-import { UserTypeEnum } from '../../../src/Entities/Enums/UserTypeEnum'
 import assert from 'assert'
 import dotenv from 'dotenv'
 dotenv.config()
@@ -17,11 +16,11 @@ let order: any = {}
 const jwtSecret = process.env.JWT_SECRET || ''
 
 Given('que o cliente não se identifica', async () => {
-    token = jwt.sign({ name: 'Teste', type: UserTypeEnum.UNREGISTERED }, jwtSecret)
+    token = jwt.sign({ name: 'Teste', type: 'unregistered user' }, jwtSecret)
 })
 
 Given('que o cliente se identifica via CPF {string}', async (cpf: string) => {
-    token = jwt.sign({ name: 'Teste', user_name: 'Teste', type: UserTypeEnum.REGISTERED, cpf }, jwtSecret)
+    token = jwt.sign({ name: 'Teste', user_name: 'Teste', type: 'user', cpf }, jwtSecret)
     order.cpf = cpf
 })
 
@@ -30,7 +29,6 @@ When('o cliente seleciona o produto {string} da categoria {string} nessa quantid
         .get(`/product/${productType}`)
         .set({ 'token': token })
         .expect(200)
-    console.log(productType,productResponse.body)
     
     const product = productResponse.body.products.find((product: any) => product.name === productName)
     if (!product) {
