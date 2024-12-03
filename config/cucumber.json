@@ -2,7 +2,7 @@
     "default": {
         "requireModule": ["ts-node/register"],
         "require": ["tests/features/**/*.steps.ts"],
-        "format": ["progress", "json:reports/cucumber-report.json"],
+        "format": ["progress-bar", "json:reports/cucumber-report.json", "html:reports/cucumber-report.html"],
         "parallel": 2,
         "paths": ["tests/features/**/*.feature"],
         "testRunner": "vitest-cucumber"
